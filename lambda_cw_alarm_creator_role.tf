@@ -114,10 +114,10 @@ resource "aws_kms_grant" "give_lambda_role_access" {
 }
 
 # This is a work-around until Terraform allows us to attach multiple policies to an SNS role without overwriting.
-resource "aws_sns_topic_policy" "allow_lambda_sns_access" {
-  arn    = aws_sns_topic.notification_receiver.arn
-  policy = data.aws_iam_policy_document.sns_topic_policy.json
-}
+# resource "aws_sns_topic_policy" "allow_lambda_sns_access" {
+#   arn    = aws_sns_topic.alert_notifier.arn
+#   policy = data.aws_iam_policy_document.sns_topic_policy.json
+# }
 
 # Lambda role needs access to SNS in order to publish message if something goes wrong when creating an alarm.
 data "aws_iam_policy_document" "sns_topic_policy" {
@@ -145,6 +145,6 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       identifiers = ["events.amazonaws.com"]
     }
 
-    resources = [aws_sns_topic.notification_receiver.arn]
+    resources = [aws_sns_topic.alert_notifier.arn]
   }
 }
