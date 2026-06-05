@@ -131,7 +131,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       identifiers = ["arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${local.lambda_cw_alarm_name}/${local.lambda_cw_alarm_name}"]
     }
 
-    resources = [aws_sns_topic.notification_receiver.arn]
+    resources = [aws_sns_topic.alert_notifier.arn]
   }
 
   # Give EventBridge access to publish to SNS.

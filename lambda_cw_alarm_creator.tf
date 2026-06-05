@@ -25,20 +25,20 @@ module "lambda_cw_alarm_creator" {
   sqs_dlq_arn = var.sqs_dlq_arn
 }
 
-# Create Lambda layer to host custom_alarms.json
+# # Create Lambda layer to host custom_alarms.json
 
-resource "aws_lambda_layer_version" "custom_actions" {
-  count = var.source_directory_location != null ? 1 : 0
+# resource "aws_lambda_layer_version" "custom_actions" {
+#   count = var.source_directory_location != null ? 1 : 0
 
-  layer_name  = "alarm_creator_custom_alert_actions"
-  description = "Contains a customer specific custom_alarms.json used for the alarm_creator"
+#   layer_name  = "alarm_creator_custom_alert_actions"
+#   description = "Contains a customer specific custom_alarms.json used for the alarm_creator"
 
-  filename = data.archive_file.custom_action[0].output_path
+#   filename = data.archive_file.custom_action[0].output_path
 
-  source_code_hash = data.archive_file.custom_action[0].output_base64sha256
+#   source_code_hash = data.archive_file.custom_action[0].output_base64sha256
 
-  compatible_runtimes = ["python3.13"]
-}
+#   compatible_runtimes = ["python3.13"]
+# }
 
 # Cron job event rule directly tied to lambda function.
 resource "aws_cloudwatch_event_rule" "refresh_alarms" {
