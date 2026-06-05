@@ -24,7 +24,7 @@ resource "aws_cloudformation_stack" "configure_client" {
         }
 
         AlarmTopicArn = {
-            Type = "string"
+            Type = "String"
         }
     }
 
