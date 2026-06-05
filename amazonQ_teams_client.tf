@@ -1,5 +1,5 @@
-resource "aws_cloudformation_stack" "amazon_q_client" {
-  name = "amazon_q_teams_client_config"
+resource "aws_cloudformation_stack" "configure_client" {
+  name = "teams_client"
 
   parameters = {
     TeamId = var.team_id
@@ -7,6 +7,10 @@ resource "aws_cloudformation_stack" "amazon_q_client" {
     TeamsTenantId = var.teams_tenant_id
     AlarmTopicArn  = aws_sns_topic.alert_notifier.arn
   }
+
+  capabilities = [
+    "CAPABILITY_NAMED_IAM"
+  ]
 
   
   template_body = jsonencode({
@@ -20,6 +24,10 @@ resource "aws_cloudformation_stack" "amazon_q_client" {
         }
 
         TeamsChannelId = {
+            Type = "String"
+        }
+
+        AlarmTopicArn = {
             Type = "String"
         }
     }
