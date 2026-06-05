@@ -45,3 +45,18 @@ variable "endpoint" {
   description = "endpoint of amazonz q client"
   type = string
 }
+
+variable "team_id" {
+  description = "Teams Id"
+  type = string
+}
+
+variable "teams_channel_id" {
+  description = "Teams Channel Id"
+  type = string
+}
+
+variable "teams_tenant_id" {
+  description = "Teams Tenant Id"
+  type = string
+} 
