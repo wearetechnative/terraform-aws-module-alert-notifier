@@ -1,5 +1,5 @@
-resource "aws_cloudformation_stack" "amazon_q_client" {
-  name = "amazon_q_teams_client_config"
+resource "aws_cloudformation_stack" "configure_client" {
+  name = "teams_client"
 
   parameters = {
     TeamId = var.team_id
@@ -21,6 +21,10 @@ resource "aws_cloudformation_stack" "amazon_q_client" {
 
         TeamsChannelId = {
             Type = "String"
+        }
+
+        AlarmTopicArn = {
+            Type = "string"
         }
     }
 
