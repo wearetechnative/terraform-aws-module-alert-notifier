@@ -8,6 +8,10 @@ resource "aws_cloudformation_stack" "configure_client" {
     AlarmTopicArn  = aws_sns_topic.alert_notifier.arn
   }
 
+  capabilities = [
+    "CAPABILITY_NAMED_IAM"
+  ]
+
   
   template_body = jsonencode({
     Parameters = {
