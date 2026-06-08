@@ -70,22 +70,7 @@ This enables engineering and operations teams to receive real-time notifications
 This module can be used to notify Teams channels about:
 
 ### CloudWatch Alarms
-
-- High CPU utilization
-- High memory utilization
-- Low disk space
-- Application health issues
-- Database performance degradation
-- Service availability issues
-
 ### EventBridge Events
-
-- EC2 instance termination
-- ECS service events
-- RDS events
-- ElastiCache events
-- Custom AWS service events
-- Security and operational events
 
 ---
 
@@ -135,6 +120,127 @@ This module can be used to notify Teams channels about:
 - KMS grants
 - SNS topic policies
 - IAM policies and attachments
+
+Microsoft Teams & AWS Chatbot Setup
+
+Before deploying this module, a Microsoft Teams channel and AWS Chatbot integration must be configured. The module requires the following values:
+
+* `team_id`
+* `teams_tenant_id`
+* `teams_channel_id`
+
+These values are used to create the AWS Chatbot Microsoft Teams Channel Configuration that receives notifications from SNS and forwards them to Microsoft Teams.
+
+## Prerequisites
+
+* AWS account with permissions to configure AWS Chatbot.
+* Microsoft Teams administrator permissions.
+* A Microsoft Teams Team where alerts will be delivered.
+
+---
+
+## Step 1 - Create a Microsoft Teams Channel
+
+1. Open Microsoft Teams.
+2. Navigate to the Team where AWS notifications should be delivered.
+3. Select **More options (...)** next to the Team name.
+4. Click **Add channel**.
+5. Configure the channel:
+
+   * Name: `AWS Alerts`
+   * Description: Infrastructure and operational notifications
+   * Privacy: Standard
+6. Click **Create**.
+
+It is recommended to use a dedicated channel for AWS notifications to avoid cluttering operational discussions.
+
+---
+
+## Step 2 - Authorize Microsoft Teams in AWS Chatbot
+
+1. Log in to the AWS Console.
+2. Navigate to **Amazon Q Developer (AWS Chatbot)**.
+3. Select **Microsoft Teams** from the left navigation menu.
+4. Click **Configure client**.
+5. Sign in using a Microsoft Teams administrator account.
+6. Grant the requested permissions.
+7. Select the Microsoft Teams Team that should receive notifications.
+
+Once completed, AWS Chatbot will establish trust between AWS and Microsoft Teams.
+
+---
+
+## Step 3 - Retrieve the Team ID
+
+After authorization:
+
+1. Open AWS Chatbot.
+2. Navigate to **Microsoft Teams Clients**.
+3. Open the configured Teams client.
+4. Locate and copy the **Team ID**.
+
+Example:
+
+```text
+12345678-abcd-1234-abcd-123456789abc
+```
+
+This value is required for the Terraform variable:
+
+```hcl
+team_id
+```
+
+---
+
+## Step 4 - Retrieve the Tenant ID
+
+From the same AWS Chatbot configuration:
+
+1. Open the Teams client details.
+2. Copy the **Tenant ID**.
+
+Example:
+
+```text
+87654321-abcd-1234-abcd-123456789abc
+```
+
+This value is required for the Terraform variable:
+
+```hcl
+teams_tenant_id
+```
+
+---
+
+## Step 5 - Retrieve the Teams Channel ID
+
+### Method 1 (Recommended)
+
+1. Open the Microsoft Teams channel that will receive alerts.
+2. Select **More options (...)**.
+3. Click **Get link to channel**.
+4. Copy the generated URL.
+
+Example:
+
+```text
+https://teams.microsoft.com/l/channel/19%3Axxxxxxxxxxxxxxxxxxxxxxxx%40thread.tacv2/AWS-Alerts?groupId=...
+```
+
+The Channel ID is the value located between:
+
+```text
+/channel/
+```
+
+and the channel name.
+
+Example:
+
+```text
+19%3Axxxxxxxxxxxxxxxxxxxxxxxx%40thread.tacv2
 
 ---
 
