@@ -136,7 +136,6 @@ To use this module ...
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_endpoint"></a> [endpoint](#input\_endpoint) | endpoint of amazonz q client | `string` | n/a | yes |
 | <a name="input_eventbridge_rules"></a> [eventbridge\_rules](#input\_eventbridge\_rules) | EventBridge rule settings. | <pre>map(object({<br>    description : string<br>    state : string<br>    event_pattern : string<br>    })<br>  )</pre> | `{}` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | ARN of the KMS key. | `string` | n/a | yes |
 | <a name="input_lambda_timeout"></a> [lambda\_timeout](#input\_lambda\_timeout) | Lambda function timeout. | `number` | `180` | no |

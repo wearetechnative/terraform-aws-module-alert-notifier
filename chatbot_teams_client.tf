@@ -4,10 +4,10 @@ resource "aws_chatbot_teams_channel_configuration" "test" {
   iam_role_arn       = aws_iam_role.chatbot_role.arn
   team_id            = var.team_id
   tenant_id          = var.teams_tenant_id
-  sns_topic_arns     = aws_sns_topic.alert_notifier.arn
+  sns_topic_arns     = [aws_sns_topic.alert_notifier.arn]
   channel_name       = "Observability"
   logging_level      = "INFO"
-  guardrail_policy_arns = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+  guardrail_policy_arns = ["arn:aws:iam::aws:policy/ReadOnlyAccess"]
 }
 
 resource "aws_iam_role" "chatbot_role" {

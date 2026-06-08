@@ -41,10 +41,10 @@ variable "lambda_timeout" {
   default     = 180
 }
 
-variable "endpoint" {
-  description = "endpoint of amazonz q client"
-  type = string
-}
+# variable "endpoint" {
+#   description = "endpoint of amazonz q client"
+#   type = string
+# }
 
 variable "team_id" {
   description = "Teams Id"
