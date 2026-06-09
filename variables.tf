@@ -20,15 +20,6 @@ variable "kms_key_arn" {
   type        = string
 }
 
-# variable "monitoring_account_configuration" {
-#   description = "Configuration settings of the monitoring account."
-#   type = object({
-#     sqs_name    = string
-#     sqs_region  = string
-#     sqs_account = number
-#   })
-# }
-
 variable "source_directory_location" {
   description = "Source Directory location for the custom alarm creator actions.py."
   type        = string
@@ -41,10 +32,10 @@ variable "lambda_timeout" {
   default     = 180
 }
 
-variable "endpoint" {
-  description = "endpoint of amazonz q client"
-  type = string
-}
+# variable "endpoint" {
+#   description = "endpoint of amazonz q client"
+#   type = string
+# }
 
 variable "team_id" {
   description = "Teams Id"
