@@ -4,7 +4,7 @@
 
 ## Overview
 
-The **terraform-aws-module-alert-notifier** module provides a centralized alerting solution for AWS environments by forwarding operational and infrastructure events directly to Microsoft Teams through AWS Chatbot.
+The **terraform-aws-module-alert-notifier** module provides a centralized alerting solution for AWS environments by forwarding operational and infrastructure events directly to Microsoft Teams through AWS Chatbot (Amazon Q Developer).
 
 This module creates and configures the required AWS resources to collect alerts from multiple sources and deliver them to a Microsoft Teams channel:
 
@@ -52,7 +52,7 @@ This enables engineering and operations teams to receive real-time notifications
 
 ## Features
 
-- Microsoft Teams integration using AWS Chatbot
+- Microsoft Teams integration using AWS Chatbot (Amazon Q Developer)
 - Centralized SNS topic for alert aggregation
 - CloudWatch alarm notifications
 - EventBridge event notifications
@@ -70,8 +70,30 @@ This enables engineering and operations teams to receive real-time notifications
 This module can be used to notify Teams channels about:
 
 ### CloudWatch Alarms
+
+- EC2 CPU utilization
+- EC2 memory utilization (CloudWatch Agent)
+- EC2 root filesystem disk utilization (`/`)
+- EC2 system filesystem disk utilization (`/sys/fs/cgroup`)
+- EC2 device filesystem disk utilization (`/dev`)
+- RDS free storage space
+- RDS swap usage
+- RDS freeable memory
+- ECS task count
+
 ### EventBridge Events
 
+## Default EventBridge Rules
+
+The module automatically creates EventBridge rules for:
+
+- CloudWatch alarm state changes
+- AWS Health operational issues
+- AWS Config non-compliance events
+- AWS Backup failures
+- AWS Systems Manager (SSM) Patch Manager failures
+- RDS health and maintenance events
+- CloudWatch alarm deletion events
 ---
 
 ## How It Works
@@ -112,7 +134,7 @@ This module can be used to notify Teams channels about:
 
 ### Automation
 
-- Lambda function for CloudWatch alarm management
+- Lambda function for CloudWatch alarm creation and management
 - Lambda IAM role and permissions
 
 ### Security
@@ -121,126 +143,52 @@ This module can be used to notify Teams channels about:
 - SNS topic policies
 - IAM policies and attachments
 
-Microsoft Teams & AWS Chatbot Setup
-
-Before deploying this module, a Microsoft Teams channel and AWS Chatbot integration must be configured. The module requires the following values:
-
-* `team_id`
-* `teams_tenant_id`
-* `teams_channel_id`
-
-These values are used to create the AWS Chatbot Microsoft Teams Channel Configuration that receives notifications from SNS and forwards them to Microsoft Teams.
-
-## Prerequisites
-
-* AWS account with permissions to configure AWS Chatbot.
-* Microsoft Teams administrator permissions.
-* A Microsoft Teams Team where alerts will be delivered.
-
 ---
 
-## Step 1 - Create a Microsoft Teams Channel
+## Microsoft Teams Setup Guide for AWS Chatbot (Amazon Q Developer) Integration
+
+Before deploying this module, a Microsoft Teams Team and channel must exist and the Amazon Q Developer application must be installed in Microsoft Teams.
+
+### Step 1 - Create a Team and Channel
 
 1. Open Microsoft Teams.
-2. Navigate to the Team where AWS notifications should be delivered.
-3. Select **More options (...)** next to the Team name.
-4. Click **Add channel**.
-5. Configure the channel:
-
-   * Name: `AWS Alerts`
-   * Description: Infrastructure and operational notifications
-   * Privacy: Standard
+2. On the left panel, click **Teams and Channels**.
+3. Click **See all your teams**.
+4. Click **Create a team**.
+5. Enter a Team name and channel name.
 6. Click **Create**.
 
-It is recommended to use a dedicated channel for AWS notifications to avoid cluttering operational discussions.
+Your Team and channel are now created.
 
 ---
 
-## Step 2 - Authorize Microsoft Teams in AWS Chatbot
+### Step 2 - Add Amazon Q Developer App in Teams
 
-1. Log in to the AWS Console.
-2. Navigate to **Amazon Q Developer (AWS Chatbot)**.
-3. Select **Microsoft Teams** from the left navigation menu.
-4. Click **Configure client**.
-5. Sign in using a Microsoft Teams administrator account.
-6. Grant the requested permissions.
-7. Select the Microsoft Teams Team that should receive notifications.
+1. Click the **+ (Apps)** button on the left panel.
+2. Search for **Amazon Q**.
+3. Select **Amazon Q Developer** and click **Add**.
+4. Select the channel created in the previous step.
+5. Click **Go**.
 
-Once completed, AWS Chatbot will establish trust between AWS and Microsoft Teams.
+You will see Amazon Q messages appear in the channel, indicating that the setup completed successfully.
 
 ---
 
-## Step 3 - Retrieve the Team ID
+### Step 3 - Get the Channel Link
 
-After authorization:
+The channel link is required for AWS Chatbot configuration.
 
-1. Open AWS Chatbot.
-2. Navigate to **Microsoft Teams Clients**.
-3. Open the configured Teams client.
-4. Locate and copy the **Team ID**.
+1. Open the Teams channel that will receive AWS alerts.
+2. Click the **⋯ (More options)** menu.
+3. Click **Copy link**.
 
 Example:
 
 ```text
-12345678-abcd-1234-abcd-123456789abc
+https://teams.cloud.microsoft/l/channel/19%3A_HgthlQuhFhjLA_YGkliM3Qewhf-98GAWRoQ1fVVKSwM1%40thread.tacv2/Observability?groupId=1yg9904-6bd2-4c3b-bbef-4aeeb0f9dd70&tenantId=47125f55-4e4c-4bc9-8fe9-ghfuui4b7d1
 ```
 
-This value is required for the Terraform variable:
-
-```hcl
-team_id
-```
-
----
-
-## Step 4 - Retrieve the Tenant ID
-
-From the same AWS Chatbot configuration:
-
-1. Open the Teams client details.
-2. Copy the **Tenant ID**.
-
-Example:
-
-```text
-87654321-abcd-1234-abcd-123456789abc
-```
-
-This value is required for the Terraform variable:
-
-```hcl
-teams_tenant_id
-```
-
----
-
-## Step 5 - Retrieve the Teams Channel ID
-
-### Method 1 (Recommended)
-
-1. Open the Microsoft Teams channel that will receive alerts.
-2. Select **More options (...)**.
-3. Click **Get link to channel**.
-4. Copy the generated URL.
-
-Example:
-
-```text
-https://teams.microsoft.com/l/channel/19%3Axxxxxxxxxxxxxxxxxxxxxxxx%40thread.tacv2/AWS-Alerts?groupId=...
-```
-
-The Channel ID is the value located between:
-
-```text
-/channel/
-```
-
-and the channel name.
-
-Example:
-
-```text
-19%3Axxxxxxxxxxxxxxxxxxxxxxxx%40thread.tacv2
+Provide this link to the AWS administrator responsible for configuring the AWS Chatbot Microsoft Teams integration.
 
 ---
 
@@ -250,17 +198,18 @@ Example:
 module "teams_alert_notifier" {
   source = "github.com/TechNative-B-V/terraform-aws-module-alert-notifier"
 
-  team_id           = "xxxxxxxx"
-  teams_channel_id  = "xxxxxxxx"
-  teams_tenant_id   = "xxxxxxxx"
+  team_id          = "xxxxxxxx"
+  teams_channel_id = "xxxxxxxx"
+  teams_tenant_id  = "xxxxxxxx"
 
   kms_key_arn = aws_kms_key.notifications.arn
   sqs_dlq_arn = aws_sqs_queue.alerts_dlq.arn
 
   eventbridge_rules = {
     ec2_termination = {
-      description   = "Notify when EC2 instances are terminated"
-      state         = "ENABLED"
+      description = "Notify when EC2 instances are terminated"
+      state       = "ENABLED"
+
       event_pattern = jsonencode({
         source      = ["aws.ec2"]
         detail-type = ["EC2 Instance State-change Notification"]
@@ -279,8 +228,9 @@ Before using this module:
 ### Microsoft Teams
 
 1. Create or identify the Teams channel that will receive alerts.
-2. Configure AWS Chatbot for Microsoft Teams in the AWS Console.
-3. Obtain:
+2. Install the Amazon Q Developer application in Microsoft Teams.
+3. Provide the Teams channel link to the AWS administrator.
+4. Obtain:
    - Team ID
    - Teams Channel ID
    - Teams Tenant ID
@@ -328,17 +278,6 @@ This module follows AWS security best practices:
 
 ---
 
-## Operational Considerations
-
-- AWS Chatbot delivers messages on a best-effort basis.
-- EventBridge rules should be scoped carefully to avoid excessive notifications.
-- Consider creating dedicated Teams channels for:
-  - Critical alerts
-  - Infrastructure alerts
-  - Security events
-  - Application monitoring
-
----
 
 ## Outputs
 
@@ -352,58 +291,69 @@ ARN of the SNS topic used for alert distribution.
 
 ---
 
-## Best Practices
-
-When consuming this module:
-
-- Keep alerting channels focused and actionable.
-- Route only relevant EventBridge events.
-- Use severity-based CloudWatch alarms.
-- Review notification noise regularly.
-- Integrate with incident management processes.
-
-Terraform module documentation should clearly describe module purpose, inputs, outputs, usage examples, and repository structure to improve maintainability and adoption. :contentReference[oaicite:0]{index=0}
-
----
-
-## Terraform Documentation
-
-This repository uses:
-
-- terraform-docs
-- pre-commit
-- tflint
-
-Generate documentation using:
-
-```bash
-terraform-docs .
-```
-
-Install pre-commit hooks:
-
-```bash
-pre-commit install
-```
-
----
-
-## Contributing
-
-1. Create a feature branch.
-2. Implement changes.
-3. Run formatting and validation checks.
-4. Update documentation.
-5. Submit a Pull Request.
-
----
-
-## License
-
-MIT License
-
----
-
 ## Authors
 
 TechNative B.V.
+<!-- BEGIN_TF_DOCS -->
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | > 4.3.0 |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_iam_role_lambda_cw_alarm_creator"></a> [iam\_role\_lambda\_cw\_alarm\_creator](#module\_iam\_role\_lambda\_cw\_alarm\_creator) | github.com/wearetechnative/terraform-aws-iam-role | 9229bbd0280807cbc49f194ff6d2741265dc108a |
+| <a name="module_lambda_cw_alarm_creator"></a> [lambda\_cw\_alarm\_creator](#module\_lambda\_cw\_alarm\_creator) | github.com/wearetechnative/terraform-aws-lambda.git | 5ba61dffd4fd93e7ec4d4883f75acab7d56847bd |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_chatbot_teams_channel_configuration.test](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/chatbot_teams_channel_configuration) | resource |
+| [aws_cloudwatch_event_rule.cloudwatch_instance_termininate_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
+| [aws_cloudwatch_event_rule.refresh_alarms](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
+| [aws_cloudwatch_event_rule.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
+| [aws_cloudwatch_event_target.instance_terminate_lambda_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
+| [aws_cloudwatch_event_target.lambda_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
+| [aws_cloudwatch_event_target.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
+| [aws_iam_role.chatbot_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy_attachment.cloudwatch_readonly](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_kms_grant.give_lambda_role_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_grant) | resource |
+| [aws_lambda_permission.allow_eventbridge](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
+| [aws_lambda_permission.allow_eventbridge_instance_terminate_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
+| [aws_sns_topic.alert_notifier](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_policy_document.cloudwatch_alarms](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.eventbus](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.kms](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.lambda_cw_alarm_creator_dlq_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.lambda_ec2_read_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.lambda_ecs_read_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.lambda_elasticache_read_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.lambda_rds_read_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.sns_topic_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_eventbridge_rules"></a> [eventbridge\_rules](#input\_eventbridge\_rules) | EventBridge rule settings. | <pre>map(object({<br>    description : string<br>    state : string<br>    event_pattern : string<br>    })<br>  )</pre> | `{}` | no |
+| <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | ARN of the KMS key. | `string` | n/a | yes |
+| <a name="input_lambda_timeout"></a> [lambda\_timeout](#input\_lambda\_timeout) | Lambda function timeout. | `number` | `180` | no |
+| <a name="input_source_directory_location"></a> [source\_directory\_location](#input\_source\_directory\_location) | Source Directory location for the custom alarm creator actions.py. | `string` | `null` | no |
+| <a name="input_sqs_dlq_arn"></a> [sqs\_dlq\_arn](#input\_sqs\_dlq\_arn) | ARN of the Dead Letter Queue. | `string` | n/a | yes |
+| <a name="input_team_id"></a> [team\_id](#input\_team\_id) | Teams Id | `string` | n/a | yes |
+| <a name="input_teams_channel_id"></a> [teams\_channel\_id](#input\_teams\_channel\_id) | Teams Channel Id | `string` | n/a | yes |
+| <a name="input_teams_tenant_id"></a> [teams\_tenant\_id](#input\_teams\_tenant\_id) | Teams Tenant Id | `string` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_sns_topic_arn"></a> [sns\_topic\_arn](#output\_sns\_topic\_arn) | n/a |
+<!-- END_TF_DOCS -->
