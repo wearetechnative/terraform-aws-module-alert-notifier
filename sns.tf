@@ -4,7 +4,7 @@ resource "aws_sns_topic" "alert_notifier" {
   kms_master_key_id = var.kms_key_arn
 }
 
-resource "aws_sns_topic" "alert_notifier" {
+resource "aws_sns_topic" "alert_forwarder" {
   name              = "event_parser"
   kms_master_key_id = var.kms_key_arn
 }

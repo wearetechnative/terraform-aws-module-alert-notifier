@@ -27,7 +27,7 @@ module "lambda_event_parser" {
 resource "aws_lambda_permission" "payload_forwarder" {
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
-  function_name = module.lambda_payload_forwarder.lambda_function_name
+  function_name = module.lambda_event_parser.lambda_function_name
   principal     = "sns.amazonaws.com"
-  source_arn    = aws_sns_topic.notification_receiver.arn
+  source_arn    = aws_sns_topic.alert_forwarder.arn
 }
