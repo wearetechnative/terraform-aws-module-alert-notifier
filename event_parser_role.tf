@@ -6,7 +6,7 @@ module "iam_role_lambda_payload_forwarder" {
 
   customer_managed_policies = {
     "lambda_payload_forwarder_dlq_policy" : jsondecode(data.aws_iam_policy_document.lambda_payload_forwarder_dlq_policy.json)
-    "lambda_monitoring_account_sqs_access_policy" : jsondecode(data.aws_iam_policy_document.lambda_monitoring_account_sqs_access_policy.json)
+    "lambda_payload_forwarder_logging_policy" : jsondecode(data.aws_iam_policy_document.lambda_payload_forwarder_logging_policy.json)
     "kms" : jsondecode(data.aws_iam_policy_document.kms_ep.json)
   }
 
@@ -35,5 +35,26 @@ data "aws_iam_policy_document" "lambda_payload_forwarder_dlq_policy" {
     actions = ["sqs:SendMessage"]
 
     resources = [var.sqs_dlq_arn]
+  }
+}
+
+data "aws_iam_policy_document" "lambda_payload_forwarder_logging_policy" {
+  statement {
+    sid = "AllowCloudWatchLogGroupCreation"
+
+    actions = ["logs:CreateLogGroup"]
+
+    resources = ["arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:*"]
+  }
+
+  statement {
+    sid = "AllowCloudWatchLogWrites"
+
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+
+    resources = ["arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.lambda_payload_forwarder}:*"]
   }
 }
