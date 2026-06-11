@@ -124,6 +124,10 @@ def normalize_eventbridge_event(event):
 
     source = event.get("source", "Unknown source")
     detail_type = event.get("detail-type", "Unknown event")
+
+    if is_eventbridge_cloudwatch_alarm(source, detail_type, detail):
+        return normalize_eventbridge_cloudwatch_alarm(event)
+
     region = event.get("region", "Unknown region")
     account = event.get("account", "Unknown account")
     resources = event.get("resources", [])
@@ -155,6 +159,50 @@ def normalize_eventbridge_event(event):
             "Review the EventBridge event details",
             "Check the affected AWS resource",
             "Investigate recent changes around the event time",
+        ],
+        "raw": event,
+    }
+
+
+def is_eventbridge_cloudwatch_alarm(source, detail_type, detail):
+    return (
+        source == "aws.cloudwatch"
+        and detail_type == "CloudWatch Alarm State Change"
+        and isinstance(detail.get("state"), dict)
+    )
+
+
+def normalize_eventbridge_cloudwatch_alarm(event):
+    detail = event.get("detail", {})
+    state_detail = detail.get("state", {})
+    previous_state_detail = detail.get("previousState", {})
+    configuration = detail.get("configuration", {})
+
+    alarm_name = detail.get("alarmName", "Unknown CloudWatch alarm")
+    state = state_detail.get("value", "UNKNOWN")
+    old_state = previous_state_detail.get("value")
+    reason = state_detail.get("reason", "No reason provided")
+    alarm_arn = first_resource(event)
+
+    severity = configuration.get("description") or infer_severity_from_state(state)
+
+    return {
+        "severity": severity,
+        "title": f"CloudWatch alarm: {alarm_name}",
+        "state": state,
+        "old_state": old_state,
+        "service": "CloudWatch",
+        "account": event.get("account", "Unknown account"),
+        "region": event.get("region", "Unknown region"),
+        "resource": alarm_name,
+        "reason": reason,
+        "event_type": "CustomCloudWatchEvent",
+        "original_event_type": event.get("detail-type", "CloudWatch Alarm State Change"),
+        "summary": f"{alarm_name} is {state}",
+        "related_resources": compact_list([alarm_arn, alarm_name]),
+        "next_steps": [
+            "Check the CloudWatch alarm details",
+            "Check the affected resource metrics",
         ],
         "raw": event,
     }
