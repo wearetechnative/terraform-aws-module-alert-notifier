@@ -189,6 +189,7 @@ https://teams.cloud.microsoft/l/channel/19%3A_HgthlQuhFhjLA_YGkliM3Qewhf-98GAWRo
 ```
 
 Provide this link to the AWS administrator responsible for configuring the AWS Chatbot Microsoft Teams integration.
+Most of the times this link doesn't work so change teams.cloud.microsoft to teams.microsoft.com and try.
 
 ---
 
@@ -356,4 +357,7 @@ TechNative B.V.
 | Name | Description |
 |------|-------------|
 | <a name="output_sns_topic_arn"></a> [sns\_topic\_arn](#output\_sns\_topic\_arn) | n/a |
+
+## Note: In order to get all the open Alarms in the channel run the command @Amazon Q cw describe-alarms -state-value ALARM
+
 <!-- END_TF_DOCS -->
