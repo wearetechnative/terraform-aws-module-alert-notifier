@@ -7,6 +7,7 @@ module "iam_role_lambda_payload_forwarder" {
   customer_managed_policies = {
     "lambda_payload_forwarder_dlq_policy" : jsondecode(data.aws_iam_policy_document.lambda_payload_forwarder_dlq_policy.json)
     "lambda_payload_forwarder_logging_policy" : jsondecode(data.aws_iam_policy_document.lambda_payload_forwarder_logging_policy.json)
+    "lambda_payload_forwarder_sns_publish_policy" : jsondecode(data.aws_iam_policy_document.lambda_payload_forwarder_sns_publish_policy.json)
     "kms" : jsondecode(data.aws_iam_policy_document.kms_ep.json)
   }
 
@@ -56,5 +57,15 @@ data "aws_iam_policy_document" "lambda_payload_forwarder_logging_policy" {
     ]
 
     resources = ["arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.lambda_payload_forwarder}:*"]
+  }
+}
+
+data "aws_iam_policy_document" "lambda_payload_forwarder_sns_publish_policy" {
+  statement {
+    sid = "AllowPublishToChatbotTopic"
+
+    actions = ["sns:Publish"]
+
+    resources = [aws_sns_topic.alert_notifier.arn]
   }
 }
