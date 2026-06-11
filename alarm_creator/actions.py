@@ -366,8 +366,6 @@ def AWS_Alarms():
                                 'period': alarms[service][alarm]['Period'],
                                 'statistic': alarms[service][alarm]['Statistic'],
                                 'threshold': cw_threshold,
-                                'actions_enabled': True,
-                                'ok_actions' : [sns_arn],
                                 'treat_missing_data': alarms[service][alarm]['TreatMissingData'],
                                 'alarm_description': f"{priority}",
                                 'dimensions': dimensionlist,
@@ -405,7 +403,7 @@ def AWS_Alarms():
                         
 
 # A helper function to handle retries with exponential backoff to prevent throttling.
-def put_metric_alarm_with_retries(CWclient, alarm_name, comparison_operator, evaluation_periods, metric_name, namespace, period, statistic, threshold, actions_enabled, ok_actions, treat_missing_data, alarm_description, dimensions, tags, max_retries=5):
+def put_metric_alarm_with_retries(CWclient, alarm_name, comparison_operator, evaluation_periods, metric_name, namespace, period, statistic, threshold, treat_missing_data, alarm_description, dimensions, tags, max_retries=5):
     retries = 0
     while retries < max_retries:
         try:
@@ -418,8 +416,6 @@ def put_metric_alarm_with_retries(CWclient, alarm_name, comparison_operator, eva
                 Period=period,
                 Statistic=statistic,
                 Threshold=threshold,
-                ActionsEnabled=actions_enabled,
-                OKActions=ok_actions,
                 TreatMissingData=treat_missing_data,
                 AlarmDescription=alarm_description,
                 Dimensions=dimensions,

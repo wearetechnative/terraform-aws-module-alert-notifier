@@ -103,7 +103,8 @@ def normalize_cloudwatch_alarm(alarm):
         "region": alarm.get("Region", "Unknown region"),
         "resource": resource,
         "reason": reason,
-        "event_type": "CloudWatchAlarm",
+        "event_type": "CustomCloudWatchAlarm",
+        "original_event_type": "CloudWatchAlarm",
         "summary": f"{alarm_name} is {state}",
         "related_resources": compact_list([
             alarm.get("AlarmArn"),
@@ -146,7 +147,8 @@ def normalize_eventbridge_event(event):
         "region": region,
         "resource": resource,
         "reason": reason,
-        "event_type": detail_type,
+        "event_type": custom_event_type(source),
+        "original_event_type": detail_type,
         "summary": f"{detail_type} from {source}",
         "related_resources": compact_list(resources),
         "next_steps": [
@@ -232,11 +234,8 @@ def render_chatbot_message(normalized):
             "summary": normalized.get("summary", normalized["title"])[:250],
             "eventType": normalized.get("event_type", "AwsNotification"),
             "relatedResources": normalized.get("related_resources", [])[:10],
-            "additionalContext": {
-                "generatedAt": datetime.now(timezone.utc).isoformat(),
-                "service": normalized.get("service"),
-                "severity": normalized.get("severity"),
-            },
+            "enableCustomActions": False,
+            "additionalContext": additional_context(normalized),
         },
     }
 
@@ -259,6 +258,28 @@ def make_thread_id(normalized):
     base = resource or title or event_type or "aws-notification"
 
     return str(base).replace(" ", "-")[:250]
+
+
+def custom_event_type(source):
+    if source in ["aws.cloudwatch", "aws.monitoring"]:
+        return "CustomCloudWatchEvent"
+
+    return "CustomEventBridgeEvent"
+
+
+def additional_context(normalized):
+    context = {
+        "generatedAt": datetime.now(timezone.utc).isoformat(),
+        "service": normalized.get("service"),
+        "severity": normalized.get("severity"),
+        "originalEventType": normalized.get("original_event_type"),
+    }
+
+    return {
+        key: str(value)
+        for key, value in context.items()
+        if value is not None
+    }
 
 
 def first_dimension_value(dimensions):
