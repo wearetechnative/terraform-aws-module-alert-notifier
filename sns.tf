@@ -12,10 +12,10 @@ resource "aws_sns_topic" "alert_forwarder" {
 
 resource "aws_sns_topic_subscription" "lambda_event_parser" {
 
-  topic_arn = aws_sns_topic.notification_receiver.arn
+  topic_arn = aws_sns_topic.alert_forwarder.arn
   protocol  = "lambda"
 
-  endpoint               = module.lambda_payload_forwarder.lambda_function_arn
+  endpoint               = module.lambda_event_parser.lambda_function_arn
   endpoint_auto_confirms = true
   raw_message_delivery   = false
   redrive_policy         = jsonencode({ deadLetterTargetArn = var.sqs_dlq_arn })
