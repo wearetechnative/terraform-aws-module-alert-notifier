@@ -1,4 +1,4 @@
-resource "aws_chatbot_slack_channel_configuration" "test" {
+resource "aws_chatbot_slack_channel_configuration" "slack" {
   count = var.notification_type == "slack" ? 1 : 0  
   configuration_name = "slack-client"
   iam_role_arn       = aws_iam_role.chatbot_role.arn
