@@ -313,7 +313,8 @@ TechNative B.V.
 
 | Name | Type |
 |------|------|
-| [aws_chatbot_teams_channel_configuration.test](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/chatbot_teams_channel_configuration) | resource |
+| [aws_chatbot_slack_channel_configuration.slack](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/chatbot_slack_channel_configuration) | resource |
+| [aws_chatbot_teams_channel_configuration.teams](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/chatbot_teams_channel_configuration) | resource |
 | [aws_cloudwatch_event_rule.cloudwatch_instance_termininate_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_rule.refresh_alarms](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_rule.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
@@ -346,18 +347,18 @@ TechNative B.V.
 | <a name="input_eventbridge_rules"></a> [eventbridge\_rules](#input\_eventbridge\_rules) | EventBridge rule settings. | <pre>map(object({<br>    description : string<br>    state : string<br>    event_pattern : string<br>    })<br>  )</pre> | `{}` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | ARN of the KMS key. | `string` | n/a | yes |
 | <a name="input_lambda_timeout"></a> [lambda\_timeout](#input\_lambda\_timeout) | Lambda function timeout. | `number` | `180` | no |
+| <a name="input_notification_type"></a> [notification\_type](#input\_notification\_type) | Select an endpoint for the alerts(slack or teams) | `string` | n/a | yes |
+| <a name="input_slack_channel_id"></a> [slack\_channel\_id](#input\_slack\_channel\_id) | channel id of your slack channel | `string` | `null` | no |
+| <a name="input_slack_team_id"></a> [slack\_team\_id](#input\_slack\_team\_id) | ID of the Slack workspace authorized with AWS Chatbot | `string` | `null` | no |
 | <a name="input_source_directory_location"></a> [source\_directory\_location](#input\_source\_directory\_location) | Source Directory location for the custom alarm creator actions.py. | `string` | `null` | no |
 | <a name="input_sqs_dlq_arn"></a> [sqs\_dlq\_arn](#input\_sqs\_dlq\_arn) | ARN of the Dead Letter Queue. | `string` | n/a | yes |
-| <a name="input_team_id"></a> [team\_id](#input\_team\_id) | Teams Id | `string` | n/a | yes |
-| <a name="input_teams_channel_id"></a> [teams\_channel\_id](#input\_teams\_channel\_id) | Teams Channel Id | `string` | n/a | yes |
-| <a name="input_teams_tenant_id"></a> [teams\_tenant\_id](#input\_teams\_tenant\_id) | Teams Tenant Id | `string` | n/a | yes |
+| <a name="input_team_id"></a> [team\_id](#input\_team\_id) | Teams Id | `string` | `null` | no |
+| <a name="input_teams_channel_id"></a> [teams\_channel\_id](#input\_teams\_channel\_id) | Teams Channel Id | `string` | `null` | no |
+| <a name="input_teams_tenant_id"></a> [teams\_tenant\_id](#input\_teams\_tenant\_id) | Teams Tenant Id | `string` | `null` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | <a name="output_sns_topic_arn"></a> [sns\_topic\_arn](#output\_sns\_topic\_arn) | n/a |
-
-## Note: In order to get all the open Alarms in the channel run the command @Amazon Q cw describe-alarms -state-value ALARM
-
 <!-- END_TF_DOCS -->
