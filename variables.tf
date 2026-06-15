@@ -46,7 +46,7 @@ variable "team_id" {
       var.notification_type != "teams" ||
       var.team_id != null
     )
-    error_message = "teams_id requires a value"
+    error_message = "teams_id requires a value because you have selected 'teams' as notification type"
   }
 }
 
@@ -59,7 +59,7 @@ variable "teams_channel_id" {
       var.notification_type != "teams" ||
       var.teams_channel_id != null
     )
-    error_message = "teams_channel_id requires a value"
+    error_message = "teams_channel_id requires a value because you have selected 'teams' as notification type"
   }
 }
 
@@ -72,7 +72,7 @@ variable "teams_tenant_id" {
       var.notification_type != "teams" ||
       var.teams_tenant_id != null
     )
-    error_message = "Teams_Tenant_id requires a value"
+    error_message = "Teams_Tenant_id requires a value because you have selected 'teams' as notification type"
   }
 } 
 
@@ -94,7 +94,7 @@ variable "slack_channel_id" {
       var.notification_type != "slack" ||
       var.slack_channel_id != null
     )
-    error_message = "Slack_channel_id requires a value"
+    error_message = "Slack_channel_id requires a value you have selected 'slack' as notification type"
   }
 }
 variable "slack_team_id" {
@@ -106,6 +106,6 @@ variable "slack_team_id" {
       var.notification_type != "slack" ||
       var.slack_team_id != null
     )
-    error_message = "Slack_team_id requires a value"
+    error_message = "Slack_team_id requires a value because you have selected 'slack' as notification type"
   }
 }
