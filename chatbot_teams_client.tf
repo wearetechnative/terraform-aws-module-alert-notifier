@@ -1,4 +1,5 @@
 resource "aws_chatbot_teams_channel_configuration" "test" {
+  count = var.notification_type == "teams" ? 1 : 0
   channel_id         = var.teams_channel_id
   configuration_name = "teams_client"
   iam_role_arn       = aws_iam_role.chatbot_role.arn

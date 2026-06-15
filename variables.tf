@@ -40,14 +40,72 @@ variable "lambda_timeout" {
 variable "team_id" {
   description = "Teams Id"
   type = string
+  default = null
+  validation {
+    condition = (
+      var.notification_type != "teams" ||
+      var.team_id != null
+    )
+    error_message = "teams_id requires a value"
+  }
 }
 
 variable "teams_channel_id" {
   description = "Teams Channel Id"
   type = string
+  default = null
+  validation   {
+    condition = (
+      var.notification_type != "teams" ||
+      var.teams_channel_id != null
+    )
+    error_message = "teams_channel_id requires a value"
+  }
 }
 
 variable "teams_tenant_id" {
   description = "Teams Tenant Id"
   type = string
+  default = null
+  validation {
+    condition = (
+      var.notification_type != "teams" ||
+      var.teams_tenant_id != null
+    )
+    error_message = "Teams_Tenant_id requires a value"
+  }
 } 
+
+variable "notification_type" {
+  description = "Select an endpoint for the alerts(slack or teams)"
+  type = string
+  validation {
+    condition = var.notification_type == "teams" || var.notification_type == "slack"
+    error_message = "The value of notifcation type can either be 'teams' or 'slack'"
+  }
+}
+
+variable "slack_channel_id" {
+  description = "channel id of your slack channel"
+  type = string
+  default = null
+  validation {
+    condition = (
+      var.notification_type != "slack" ||
+      var.slack_channel_id != null
+    )
+    error_message = "Slack_channel_id requires a value"
+  }
+}
+variable "slack_team_id" {
+  description = "ID of the Slack workspace authorized with AWS Chatbot"
+  type = string 
+  default = null 
+  validation {
+    condition = (
+      var.notification_type != "slack" ||
+      var.slack_team_id != null
+    )
+    error_message = "Slack_team_id requires a value"
+  }
+}
