@@ -1,4 +1,4 @@
-# Terraform AWS Teams Chatbot Alert Notifier ![](https://img.shields.io/badge/Terraform-Module-blue?style=plastic) ![](https://img.shields.io/badge/AWS-CloudWatch%20%7C%20SNS%20%7C%20Chatbot-orange?style=plastic)
+# Terraform AWS Teams Chatbot Alert Notifier ![](https://img.shields.io/badge/Terraform-Module-blue?style=plastic) ![](https://img.shields.io/badge/AWS-CloudWatch%20%7C%20SNS%20%7C%20Chatbot-orange?style=plastic) ![](https://img.shields.io/github/actions/workflow/status/wearetechnative/terraform-aws-module-alert-notifier/tflint.yaml?branch=main&style=plastic)
 
 [![](we-are-technative.png)](https://www.technative.nl)
 
