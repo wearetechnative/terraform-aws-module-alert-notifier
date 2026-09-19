@@ -18,7 +18,7 @@ module "lambda_cw_alarm_creator" {
   source_file_name          = null
 
   environment_variables = {
-    SNS_ARN             = "${aws_sns_topic.alert_notifier.arn}"
+    SNS_ARN             = aws_sns_topic.alert_notifier.arn
     CUSTOM_ALERT_ACTION = var.source_directory_location != null ? true : false
   }
 
